@@ -27,7 +27,7 @@ await client.connect();
 console.log("Connected to Redis database");
 
 // Constants
-const CHUNK_SIZE = 7864320; // 7.5 MB
+const CHUNK_SIZE = 8388608; // 8 MB
 
 const token = process.env.DISCORD_BOT_TOKEN;
 const channelId = process.env.DISCORD_CHANNEL_ID;

@@ -8,7 +8,10 @@
     "REDIS_URL": {
       "required": true
     },
-    "DISCORD_WEBHOOK_URL": {
+    "DISCORD_BOT_TOKEN": {
+      "required": true
+    },
+    "DISCORD_CHANNEL_ID": {
       "required": true
     }
   }
