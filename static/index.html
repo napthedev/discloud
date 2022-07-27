@@ -207,12 +207,14 @@ fetch("<span class="href"></span>upload?fileName=react.pdf", {
           } else {
             document.querySelector("#upload-progress").classList.add("d-none");
             document.querySelector(".alert").classList.remove("d-none");
+            console.log(xhr.responseText);
           }
           input.value = "";
         };
         xhr.onerror = () => {
           document.querySelector("#upload-progress").classList.add("d-none");
           document.querySelector(".alert").classList.remove("d-none");
+          console.log(xhr.responseText);
         };
         xhr.send(file);
       });

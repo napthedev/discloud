@@ -8,6 +8,7 @@ import { uploadToDiscord } from "./services/discord.js";
 import { randomId } from "./utils/id.js";
 import { AsyncStreamProcessor } from "./utils/stream.js";
 import { formatFileName } from "./utils/string.js";
+import { wait } from "./utils/time.js";
 
 dotenv.config();
 const app = express();
@@ -28,8 +29,10 @@ console.log("Connected to Redis database");
 // Constants
 const CHUNK_SIZE = 7864320; // 7.5 MB
 
-const webhookURL = process.env.DISCORD_WEBHOOK_URL;
-if (!webhookURL) throw new Error("Missing webhook URL");
+const token = process.env.DISCORD_BOT_TOKEN;
+const channelId = process.env.DISCORD_CHANNEL_ID;
+if (!token || !channelId)
+  throw new Error("Missing discord bot token or channel id");
 
 app.enable("trust proxy");
 app.use(cors());
@@ -38,18 +41,15 @@ app.get("/", async (req, res) => {
   res.sendFile(path.resolve("./static/index.html"));
 });
 
-app.post("/upload", (req, res) => {
+app.post("/upload", async (req, res) => {
   try {
-    let chunkCount = 0;
     let chunks = [];
-    let parts = [];
+    let uploadedParts = [];
     let fill = 0;
     let uploadedCount = 0;
     let requestEnded = false;
     let fileSize = 0;
-
-    // Cannot handle error inside req.on() method, so a new variable is required
-    let hasFailed = false;
+    let filesToUpload = [];
 
     if (!req.query.fileName)
       return res.status(400).send({
@@ -57,45 +57,6 @@ app.post("/upload", (req, res) => {
       });
 
     const fileName = formatFileName(req.query.fileName);
-
-    const endResponse = async () => {
-      if (uploadedCount === chunkCount && requestEnded) {
-        if (hasFailed) {
-          return res.status(500).send({
-            message: "Internal server error",
-          });
-        }
-        parts = parts.sort((a, b) => a.index - b.index).map((item) => item.url);
-
-        const fileId = randomId();
-
-        await client.set(
-          fileId,
-          JSON.stringify({
-            chunkSize: CHUNK_SIZE,
-            fileName,
-            fileSize,
-            parts,
-          })
-        );
-
-        res.send({
-          fileId,
-          fileSize,
-          url: `${req.protocol}://${req.get("host")}/file/${fileId}`,
-          longURL: `${req.protocol}://${req.get(
-            "host"
-          )}/file/${fileId}/${fileName}`,
-          downloadURL: `${req.protocol}://${req.get(
-            "host"
-          )}/file/${fileId}?download=1`,
-          longDownloadURL: `${req.protocol}://${req.get(
-            "host"
-          )}/file/${fileId}/${fileName}?download=1`,
-          parts,
-        });
-      }
-    };
 
     req.on("data", (chunk) => {
       chunks.push(chunk);
@@ -108,9 +69,6 @@ app.post("/upload", (req, res) => {
       // While current length is greater than max chunk size
       // Use while instead of if because there can be chunks that are twice or three times bigger than the max chunk size
       while (fill >= CHUNK_SIZE) {
-        // Prevent index error after awaiting upload
-        let currentChunkCount = ++chunkCount;
-
         // Create a new chunk with that exact size
         const newChunk = Buffer.concat(chunks, CHUNK_SIZE);
 
@@ -126,52 +84,61 @@ app.post("/upload", (req, res) => {
 
         fill = residueLength;
 
-        uploadToDiscord(
-          webhookURL,
-          newChunk,
-          `${fileName}-chunk-${currentChunkCount}`
-        )
-          .then((url) => {
-            parts.push({
-              index: currentChunkCount,
-              url,
-            });
-          })
-          .catch(() => {
-            hasFailed = true;
-          })
-          .finally(() => {
-            uploadedCount++;
-            endResponse();
-          });
+        filesToUpload.push(newChunk);
       }
     });
 
     req.on("end", async () => {
       // Add the final chunks if there is any left-over
+      requestEnded = true;
       if (chunks.length > 0) {
-        chunkCount++;
-
         const newChunk = Buffer.concat(chunks);
 
-        uploadToDiscord(webhookURL, newChunk, `${fileName}-chunk-${chunkCount}`)
-          .then((url) => {
-            parts.push({
-              index: chunkCount,
-              url,
-            });
-          })
-          .catch(() => {
-            hasFailed = true;
-          })
-          .finally(() => {
-            requestEnded = true;
-            uploadedCount++;
-            endResponse();
-          });
+        filesToUpload.push(newChunk);
       }
     });
+
+    while (filesToUpload.length > 0 || !requestEnded) {
+      if (filesToUpload.length === 0) {
+        await wait(200);
+      } else {
+        const url = await uploadToDiscord(
+          token,
+          channelId,
+          filesToUpload.splice(0, 1)[0],
+          `${fileName}-chunk-${++uploadedCount}`
+        );
+        uploadedParts.push(url);
+      }
+    }
+
+    const fileId = randomId();
+    await client.set(
+      fileId,
+      JSON.stringify({
+        chunkSize: CHUNK_SIZE,
+        fileName,
+        fileSize,
+        parts: uploadedParts,
+      })
+    );
+    res.send({
+      fileId,
+      fileSize,
+      url: `${req.protocol}://${req.get("host")}/file/${fileId}`,
+      longURL: `${req.protocol}://${req.get(
+        "host"
+      )}/file/${fileId}/${fileName}`,
+      downloadURL: `${req.protocol}://${req.get(
+        "host"
+      )}/file/${fileId}?download=1`,
+      longDownloadURL: `${req.protocol}://${req.get(
+        "host"
+      )}/file/${fileId}/${fileName}?download=1`,
+      parts: uploadedParts,
+    });
   } catch (error) {
+    console.log(error);
     if (!res.headersSent)
       res.status(500).send({
         message: "Internal server error",
