@@ -27,5 +27,5 @@ Official website: [https://discloud-storage.herokuapp.com/](https://discloud-sto
 
 ## Deployments
 
-[![heroku](https://www.herokucdn.com/deploy/button.svg)](https://www.heroku.com/deploy/?template=https://github.com/napthedev/discloud&env[REDIS_URL]=&env[DISCORD_WEBHOOK_URL]=)  
+[![heroku](https://www.herokucdn.com/deploy/button.svg)](https://www.heroku.com/deploy/?template=https://github.com/napthedev/discloud)  
 [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/swgNkC?referralCode=YiZaHP)
