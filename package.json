@@ -1,0 +1,28 @@
+{
+  "name": "discloud",
+  "version": "1.0.0",
+  "description": "Unlimited Cloud Storage using Discord",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node .",
+    "dev": "nodemon ."
+  },
+  "keywords": [],
+  "author": "napthedev",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "axios-retry": "^3.3.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "form-data": "^4.0.0",
+    "lodash": "^4.17.21",
+    "redis": "^4.2.0",
+    "replace-special-characters": "^1.2.5"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.19"
+  }
+}

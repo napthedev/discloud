@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DisCloud - Unlimited Cloud Storage using Discord</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/github-dark.min.css"
+    />
+    <style>
+      body {
+        background-color: #181a1b;
+        color: #eee;
+      }
+      .w-100 {
+        max-width: 600px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="d-flex flex-column align-items-center mx-3 my-4">
+      <nav class="w-100">
+        <div class="d-flex justify-content-between align-items-center">
+          <h1>DisCloud</h1>
+          <a
+            href="https://github.com/napthedev/discloud"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <svg
+              style="width: 30px; height: 30px; fill: #fff"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 496 512"
+            >
+              <path
+                d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"
+              />
+            </svg>
+          </a>
+        </div>
+        <p class="text-center my-4 fs-4">
+          Unlimited Cloud Storage using Discord
+        </p>
+      </nav>
+      <div class="w-100">
+        <button class="btn btn-secondary w-100" type="button">
+          Upload File
+        </button>
+        <input class="d-none" type="file" hidden />
+        <div class="mt-3 d-none" id="upload-progress">
+          <p class="mb-0"></p>
+          <div class="progress">
+            <div
+              class="progress-bar"
+              role="progressbar"
+              aria-label="Example with label"
+              style="width: 0%"
+              aria-valuenow="0"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            >
+              0%
+            </div>
+          </div>
+        </div>
+        <div class="alert alert-danger mt-4 d-none" role="alert">
+          Failed to upload
+        </div>
+        <div class="input-group mt-3 d-none" id="result">
+          <button
+            onclick="copyLink()"
+            class="btn btn-secondary"
+            type="button"
+            id="button-addon1"
+          >
+            Copy
+          </button>
+          <input
+            type="text"
+            class="form-control"
+            placeholder=""
+            aria-label="Example text with button addon"
+            aria-describedby="button-addon1"
+            readonly
+            onfocus="this.select()"
+            onclick="this.select()"
+          />
+        </div>
+      </div>
+      <div class="w-100 mt-4">
+        <h4>Advantages</h4>
+        <ul class="fs-6">
+          <li>Unlimited file size</li>
+          <li>Unlimited bandwidth</li>
+          <li>Never delete your files</li>
+          <li>Support video streaming</li>
+          <li>Direct link</li>
+          <li>Can be self-hosted</li>
+        </ul>
+      </div>
+
+      <div class="w-100 mt-3">
+        <h4>API Usage</h4>
+        <h6>Request example</h6>
+        <pre><code class="language-javascript">const file = document.querySelector("input").files[0];
+fetch("<span class="href"></span>upload?fileName=react.pdf", {
+  method: "POST",
+  body: file,
+});</code></pre>
+        <h6>Response example</h6>
+        <pre><code class="language-json">{
+  "fileId": "22d9437d2f95b52dd4ffc9e6611d043a",
+  "fileSize": 12863501,
+  "url": "<span class="href"></span>file/22d9437d2f95b52dd4ffc9e6611d043a",
+  "longURL": "<span class="href"></span>file/22d9437d2f95b52dd4ffc9e6611d043a/react.pdf",
+  "downloadURL": "<span class="href"></span>file/22d9437d2f95b52dd4ffc9e6611d043a?download=1",
+  "longDownloadURL": "<span class="href"></span>file/22d9437d2f95b52dd4ffc9e6611d043a/react.pdf?download=1",
+  "parts": [
+    "https://cdn.discordapp.com/attachments/989459557900251186/1001690979327279205/react.pdf-chunk-1",
+    "https://cdn.discordapp.com/attachments/989459557900251186/1001690975644692491/react.pdf-chunk-2"
+  ]
+}</code></pre>
+      </div>
+
+      <div class="w-100 mt-3">
+        <h4>How does this work?</h4>
+        <p>
+          Discord allows users to send attachments with a size limit of 8MB per
+          file. This project uses nodejs streaming and buffering to chunk
+          uploaded files into small pieces.
+        </p>
+        <b
+          >Special thanks to:
+          <a
+            class="link-info"
+            href="https://github.com/forscht/ddrive"
+            target="_blank"
+            rel="noopener noreferrer"
+            >DDrive</a
+          >
+          (The original idea and code)
+        </b>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
+    <script>
+      document
+        .querySelectorAll(".href")
+        .forEach((i) => (i.innerText = location.href));
+      document.querySelectorAll("pre code").forEach((el) => {
+        hljs.highlightElement(el);
+      });
+
+      const button = document.querySelector("button");
+      const input = document.querySelector("input");
+      button.addEventListener("click", () => input.click());
+      input.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        document.querySelector("#upload-progress").classList.remove("d-none");
+        document.querySelector(".alert").classList.add("d-none");
+        document.querySelector("#result").classList.add("d-none");
+
+        document.querySelector("#upload-progress p").innerText = file.name;
+
+        const progressBar = document.querySelector(
+          "#upload-progress .progress-bar"
+        );
+
+        progressBar.innerText = "0%";
+        progressBar.style.width = "0";
+        progressBar.setAttribute("aria-valuenow", "0");
+
+        const xhr = new XMLHttpRequest();
+        const path = `${location.href}upload?fileName=${encodeURIComponent(
+          file.name
+        )}`;
+        xhr.open("POST", path, true);
+
+        xhr.upload.onprogress = (e) => {
+          const percentage = Math.round((e.loaded / e.total) * 100);
+
+          progressBar.innerText = `${percentage}%`;
+          progressBar.style.width = `${percentage}%`;
+          progressBar.setAttribute("aria-valuenow", `${percentage}`);
+        };
+
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            document.querySelector("#upload-progress").classList.add("d-none");
+            document.querySelector(".alert").classList.add("d-none");
+            document.querySelector("#result").classList.remove("d-none");
+
+            document.querySelector("#result input").value = JSON.parse(
+              xhr.responseText
+            ).longURL;
+          } else {
+            document.querySelector("#upload-progress").classList.add("d-none");
+            document.querySelector(".alert").classList.remove("d-none");
+          }
+          input.value = "";
+        };
+        xhr.onerror = () => {
+          document.querySelector("#upload-progress").classList.add("d-none");
+          document.querySelector(".alert").classList.remove("d-none");
+        };
+        xhr.send(file);
+      });
+
+      const copyToClipboard = (text) => {
+        try {
+          if (navigator.clipboard && window.isSecureContext) {
+            return navigator.clipboard.writeText(text);
+          } else {
+            let textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-999999px";
+            textArea.style.top = "-999999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            return new Promise((res, rej) => {
+              document.execCommand("copy") ? res() : rej();
+              textArea.remove();
+            });
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
+      const copyLink = () => {
+        copyToClipboard(document.querySelector("#result input").value);
+      };
+    </script>
+  </body>
+</html>
