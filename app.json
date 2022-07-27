@@ -1,0 +1,7 @@
+{
+  "name": "DisCloud",
+  "description": "Unlimited Cloud Storage using Discord",
+  "repository": "https://github.com/napthedev/discloud",
+  "logo": "https://cdn-icons-png.flaticon.com/512/5968/5968756.png",
+  "keywords": ["node", "express", "discord", "cloud", "storage", "file"]
+}
