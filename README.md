@@ -31,3 +31,9 @@ Official website: [https://discloud-storage.herokuapp.com/](https://discloud-sto
 
 [![heroku](https://www.herokucdn.com/deploy/button.svg)](https://www.heroku.com/deploy/?template=https://github.com/napthedev/discloud)  
 [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/Q1KklM?referralCode=YiZaHP)
+
+#### With docker
+
+```bash
+docker run -dp 80:5000 --env REDIS_URL={REDIS_URL} --env DISCORD_BOT_TOKEN={DISCORD_BOT_TOKEN} --env DISCORD_CHANNEL_ID={DISCORD_CHANNEL_ID} napthedev/discloud:latest
+```
