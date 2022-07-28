@@ -31,13 +31,20 @@ export const uploadToDiscord = async (token, channelId, file, fileName) => {
         // Auto retry if the request is rate limited recursively
         await wait(+err.response.headers["x-ratelimit-reset-after"]);
 
-        return await uploadToDiscord(token, channelId, file, fileName);
+        return {
+          data: {
+            attachments: [
+              {
+                url: await uploadToDiscord(token, channelId, file, fileName),
+              },
+            ],
+          },
+        };
       })
       .finally(() => uploadingCount--)
   ).data;
 
   if (!result?.attachments?.[0]?.url) {
-    console.log(result);
     throw new Error("Cannot find attachments when uploading");
   }
 
