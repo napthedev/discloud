@@ -1,6 +1,5 @@
 import axios from "axios";
 import FormData from "form-data";
-import axiosRetry from "axios-retry";
 import { wait } from "../utils/time.js";
 
 const client = axios.create();
@@ -8,12 +7,6 @@ const client = axios.create();
 // Discord has a rate limit of 5 requests / 5 seconds
 // So we must queue the upload
 let uploadingCount = 0;
-
-// Auto retry to prevent rate limit error from discord
-// axiosRetry(client, {
-//   retryDelay: (retryCount) => retryCount * 1000,
-//   retries: 3,
-// });
 
 export const uploadToDiscord = async (token, channelId, file, fileName) => {
   await wait(uploadingCount++ * 1000);
@@ -35,6 +28,7 @@ export const uploadToDiscord = async (token, channelId, file, fileName) => {
         }
       )
       .catch(async (err) => {
+        // Auto retry if the request is rate limited recursively
         await wait(+err.response.headers["x-ratelimit-reset-after"]);
 
         return await uploadToDiscord(token, channelId, file, fileName);
