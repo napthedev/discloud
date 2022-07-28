@@ -182,7 +182,7 @@ fetch("<span class="href"></span>upload?fileName=react.pdf", {
         progressBar.setAttribute("aria-valuenow", "0");
 
         const xhr = new XMLHttpRequest();
-        const path = `${location.href}upload?fileName=${encodeURIComponent(
+        const path = `${location.origin}/upload?fileName=${encodeURIComponent(
           file.name
         )}`;
         xhr.open("POST", path, true);
