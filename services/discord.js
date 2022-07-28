@@ -10,18 +10,12 @@ const client = axios.create();
 let uploadingCount = 0;
 
 // Auto retry to prevent rate limit error from discord
-axiosRetry(client, {
-  retryDelay: (retryCount) => retryCount * 1000,
-  retries: 3,
-});
+// axiosRetry(client, {
+//   retryDelay: (retryCount) => retryCount * 1000,
+//   retries: 3,
+// });
 
-export const uploadToDiscord = async (
-  token,
-  channelId,
-  file,
-  fileName,
-  hasRetried = false
-) => {
+export const uploadToDiscord = async (token, channelId, file, fileName) => {
   await wait(uploadingCount++ * 1000);
 
   const formData = new FormData();
@@ -41,19 +35,16 @@ export const uploadToDiscord = async (
         }
       )
       .catch(async (err) => {
-        if (
-          !hasRetried &&
-          err?.response?.headers?.["x-ratelimit-reset-after"]
-        ) {
-          await wait(+err.response.headers["x-ratelimit-reset-after"] * 1000);
+        await wait(+err.response.headers["x-ratelimit-reset-after"]);
 
-          return await uploadToDiscord(token, channelId, file, fileName, true);
-        } else {
-          throw err;
-        }
+        return await uploadToDiscord(token, channelId, file, fileName);
       })
       .finally(() => uploadingCount--)
   ).data;
+
+  if (!result?.attachments?.[0]?.url) {
+    throw new Error("Cannot find attachments when uploading");
+  }
 
   return result.attachments[0].url;
 };
