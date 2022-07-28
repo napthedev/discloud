@@ -37,6 +37,7 @@ export const uploadToDiscord = async (token, channelId, file, fileName) => {
   ).data;
 
   if (!result?.attachments?.[0]?.url) {
+    console.log(result);
     throw new Error("Cannot find attachments when uploading");
   }
 
