@@ -138,6 +138,7 @@ app.post("/upload", async (req, res) => {
       parts: uploadedParts,
     });
   } catch (error) {
+    console.log(error?.response?.data);
     if (!res.headersSent)
       res.status(500).send({
         message: "Internal server error",
