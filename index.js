@@ -28,6 +28,7 @@ console.log("Connected to Redis database");
 
 // Constants
 const CHUNK_SIZE = 8388608; // 8 MB
+const RANGE_SIZE = 5242880; // 5 MB
 
 const token = process.env.DISCORD_BOT_TOKEN;
 const channelId = process.env.DISCORD_CHANNEL_ID;
@@ -173,9 +174,9 @@ app.get(["/file/:id/*", "/file/:id"], async (req, res) => {
     const start = rangeStr ? +rangeStr.split("=")[1].split("-")[0] : null;
 
     const end = rangeStr
-      ? start + CHUNK_SIZE >= info.fileSize - 1
+      ? start + RANGE_SIZE >= info.fileSize - 1
         ? info.fileSize - 1
-        : start + CHUNK_SIZE
+        : start + RANGE_SIZE
       : null;
 
     const partsToDownload = rangeStr
