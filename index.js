@@ -240,6 +240,6 @@ app.get(["/file/:id/*", "/file/:id"], async (req, res) => {
 });
 
 const port = process.env.PORT || 5000;
-app.listen(port, "192.168.1.49", () =>
+app.listen(port, () =>
   console.log(`Server is listening on port ${port}. http://localhost:${port}`)
 );
